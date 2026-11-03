@@ -25,6 +25,8 @@ const Resources = lazy(() => import('./pages/Resources'));
 const Planner = lazy(() => import('./pages/Planner'));
 const Mentor = lazy(() => import('./pages/Mentor'));
 const Profile = lazy(() => import('./pages/Profile'));
+const RankArena = lazy(() => import('./pages/RankArena'));
+const RankTest = lazy(() => import('./pages/RankArena').then((m) => ({ default: m.RankTest })));
 const AchievementsPage = lazy(() => import('./pages/Profile').then((m) => ({ default: m.AchievementsPage })));
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error?: Error }> {
@@ -64,6 +66,8 @@ export default function App() {
               <Route path="/tests" element={<TestCenter />} />
               <Route path="/tests/run" element={<TestRun />} />
               <Route path="/tests/practical/:examId" element={<PracticalExamPage />} />
+              <Route path="/rank" element={<RankArena />} />
+              <Route path="/rank/test" element={<RankTest />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/custom/:id" element={<CustomProjectPage />} />
               <Route path="/projects/:projectId" element={<ProjectPage />} />

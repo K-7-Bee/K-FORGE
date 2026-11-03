@@ -41,6 +41,7 @@ Copy `.env.example` to `.env`. Keys are read only by `server/index.mjs` and neve
 | **2 — Engineering Lab** | CodeMirror 6 editor (offline-capable, touch-friendly equivalent of Monaco); 67 exercises across Understand / Implement / Debug / Create; 42 auto-graded coding challenges in C, C++ and Python, covering every module from electronics to the capstone (every reference solution is compiled and run against its tests by `tests/lab-solutions.test.ts`); three-level hints; rubric and evidence submissions for hardware work; all 21 interactive engineering tools. |
 | **3 — Advanced** | STM32, RTOS and control modules with exam pools and labs; UART/I2C/SPI visualizers; PID, motor, feedback and encoder simulators; capstone workspace with 15 milestones, testing records, evidence uploads and a report generator; Test Center with diagnostic, placement, module, final, debugging and practical examinations. |
 | **4 — Personalised** | AI Mentor (server-side) with an enforced hint ladder; SM-2 spaced repetition with a daily queue, quick recall, mistake notebook and weak-topic detection; recommended starting point from the placement assessment; progress analytics; portfolio page; German and career track. |
+| **Rank mode** | Rank Arena with six ranks, from Crimson Strawberry (0 XP) to Mythical Mango (15,000 XP). A rank needs its XP **and** a 20-question rank test, drawn only from completed lessons and passed modules, scored at 60–85 % while already holding that XP. Includes a score chart, an XP journey against rank thresholds, a per-topic breakdown and the test history. Only the week's first rank test earns XP (score × 1.5). Emblems are in `public/ranks/`. |
 | **Sync & reminders** | Optional Supabase cloud sync that merges devices instead of overwriting them; evidence files in Supabase Storage; background Web Push reminders; full backup (progress + evidence files) export and restore. |
 
 ### Content at a glance
@@ -71,7 +72,7 @@ These rules are covered by the unit tests in `tests/`.
 src/
   data/          static, typed content: curriculum, question bank, lab, projects, resources, exams
     lessons/     one file per module (m-*.ts): full lessons + their knowledge-check questions (helpers.ts builders)
-  engine/        pure logic: grading, SM-2 scheduling, Boolean parser, progress/levels/achievements, dates
+  engine/        pure logic: grading, SM-2 scheduling, Boolean parser, progress/levels/achievements, ranks, dates
   store/         external store (useSyncExternalStore), persistence adapter, IndexedDB evidence,
                  cloud.ts (Supabase sync), merge.ts (device merge)
   tools/         21 interactive tools, lazy-loaded per category (registry.ts)

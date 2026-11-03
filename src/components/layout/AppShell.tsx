@@ -2,6 +2,8 @@ import { ChevronsLeft, ChevronsRight, Moon, MoreHorizontal, Pause, Play, Sun, Ti
 import { type ReactNode, useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { levelInfo } from '../../engine/levels';
+import { rankInfo } from '../../engine/ranks';
+import { RankEmblem } from '../RankEmblem';
 import { streak } from '../../engine/progress';
 import { useAutoStudyTracker, useReminders, subjectForPath } from '../../lib/hooks';
 import { toast } from '../../lib/toast';
@@ -81,6 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1280);
   const [moreOpen, setMoreOpen] = useState(false);
   const info = levelInfo(s);
+  const rank = rankInfo(s).rank;
   const st = streak(s);
   useAutoStudyTracker();
   useReminders();
@@ -134,6 +137,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Top bar */}
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-bg/80 px-4 backdrop-blur-xl sm:px-6">
           <div className="md:hidden"><Logo compact /></div>
+          <Link to="/rank" className="shrink-0 rounded-xl transition hover:scale-105" aria-label={`Your rank: ${rank.name}`} title={`${rank.name} · ${rank.title}`}>
+            <RankEmblem rank={rank} size={38} />
+          </Link>
           <Link to="/profile" className="hidden items-center gap-3 rounded-xl border border-line bg-panel-2/70 px-3 py-1.5 sm:flex" aria-label="Your level">
             <span className="grid size-7 place-items-center rounded-lg bg-accent/15 font-mono text-xs font-semibold text-accent">{info.level.n}</span>
             <div className="leading-tight">

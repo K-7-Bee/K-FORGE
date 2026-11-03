@@ -4,6 +4,8 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ReferenceLine, Responsiv
 import { findLesson, getModule } from '../data/curriculum';
 import { formatMinutes } from '../engine/dates';
 import { levelInfo } from '../engine/levels';
+import { rankInfo } from '../engine/ranks';
+import { RankEmblem } from '../components/RankEmblem';
 import {
   activeDaysThisWeek,
   dailyMissions,
@@ -35,6 +37,7 @@ const tooltipStyle = { background: 'var(--panel)', border: '1px solid var(--line
 export default function Dashboard() {
   const s = useApp();
   const info = levelInfo(s);
+  const rank = rankInfo(s);
   const st = streak(s);
   const weekMin = weekMinutes(s);
   const target = effectiveWeeklyTarget(s);
@@ -108,6 +111,20 @@ export default function Dashboard() {
           <Stat icon={<Gauge size={14} />} label="Course completion" value={`${completion}%`} hint="core curriculum" />
         </div>
       </div>
+
+      <Card className="flex flex-col items-center gap-4 p-5 sm:flex-row">
+        <RankEmblem rank={rank.rank} size={72} float />
+        <div className="min-w-0 flex-1 text-center sm:text-left">
+          <div className="text-[12px] text-fg-3">Rank {rank.rank.n} of 6 · {rank.rank.title}</div>
+          <div className="text-lg font-semibold" style={{ color: rank.rank.color }}>{rank.rank.name}</div>
+          <div className="text-[13px] text-fg-2">
+            {!rank.next ? 'Highest rank reached.' : rank.status === 'ready'
+              ? `XP reached: score ${rank.next.minScore}% on a rank test to become ${rank.next.name}.`
+              : `${(rank.next.xp - rank.xp).toLocaleString('en-US')} XP to go, then a rank test at ${rank.next.minScore}% for ${rank.next.name}.`}
+          </div>
+        </div>
+        <LinkButton to="/rank" variant={rank.status === 'ready' ? 'primary' : 'secondary'}>Rank Arena <ArrowRight size={15} /></LinkButton>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Continue learning */}

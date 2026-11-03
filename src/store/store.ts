@@ -7,9 +7,10 @@ import { CAPSTONE, getProject } from '../data/projects';
 import { getQuestion, PLACEMENT_AREAS } from '../data/questions';
 import { findAnyQuestion } from '../data/lookup';
 import type { PlacementArea } from '../data/types';
-import { dayKey, uid } from '../engine/dates';
+import { dayKey, uid, weekStart } from '../engine/dates';
 import { ACHIEVEMENTS, levelInfo, newlyUnlocked } from '../engine/levels';
-import { dailyMissions, exerciseXp, placementRecommendation, XP_TABLE } from '../engine/progress';
+import { dailyMissions, exerciseXp, placementRecommendation, totalXp, XP_TABLE } from '../engine/progress';
+import { RANK_TEST_XP_FACTOR, rankInfo } from '../engine/ranks';
 import { type Grade, newCard, review } from '../engine/srs';
 import { toast, type ToastKind } from '../lib/toast';
 import { localStorageAdapter, migrate, defaultState } from './persistence';
@@ -63,6 +64,7 @@ function commit(next: AppState, toasts: PendingToast[]) {
 /** Apply a mutation to a cloned draft, then run the post-processors (daily missions, achievements, level-ups). */
 function update(fn: (d: AppState, toasts: PendingToast[]) => void): void {
   const before = levelInfo(state).level.n;
+  const rankBefore = rankInfo(state).rank.n;
   const d = structuredClone(state);
   const toasts: PendingToast[] = [];
   fn(d, toasts);
@@ -77,6 +79,8 @@ function update(fn: (d: AppState, toasts: PendingToast[]) => void): void {
   }
   const after = levelInfo(d).level;
   if (after.n > before) toasts.push({ kind: 'level', title: `Level ${after.n}: ${after.name}`, detail: after.blurb });
+  const rank = rankInfo(d).rank;
+  if (rank.n > rankBefore) toasts.push({ kind: 'level', title: `Rank up: ${rank.name}`, detail: `${rank.title} — ${rank.tagline}` });
 
   commit(d, toasts);
 }
@@ -205,6 +209,7 @@ export function recordTestAttempt(input: AttemptInput): TestAttempt {
     const percent = total ? Math.round((score / total) * 100) : 0;
     const passed = percent >= d.settings.mastery;
     result = { ...rest, id: uid('att'), finishedAt: now(), score, total, percent, passed, mastery: d.settings.mastery };
+    if (input.kind === 'aptitude') result.xpAtStart = totalXp(d); // before this test's own XP
     d.attempts.push(result);
     log(d, 'test_attempt', input.ref, `${input.kind}:${percent}%`);
     addMistakes(d, input.answers);
@@ -223,6 +228,10 @@ export function recordTestAttempt(input: AttemptInput): TestAttempt {
       for (const [area, st] of areas) perArea[area as PlacementArea] = Math.round((st.c / st.t) * 100);
       d.placement = { at: now(), perArea, recommendation: placementRecommendation(perArea, d.settings.mastery) };
       award(d, toasts, 'placement', 'placement', XP_TABLE.placement, 'Placement assessment completed');
+    }
+    if (input.kind === 'aptitude') {
+      // Only the week's first rank test earns XP, so retakes are for practice and rank, not farming.
+      if (percent > 0) award(d, toasts, `rank-test:${weekStart()}`, 'aptitude', Math.round(percent * RANK_TEST_XP_FACTOR), `Weekly rank test: ${percent}%`);
     }
     if (passed && input.mode === 'exam') {
       if (input.kind === 'module') {

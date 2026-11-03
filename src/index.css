@@ -147,6 +147,29 @@ body {
   animation: dash 0.8s linear infinite;
 }
 
+/* Rank emblems hover gently; motion is removed for people who ask for less. */
+.emblem-float {
+  animation: emblem-float 4s ease-in-out infinite;
+}
+
+@keyframes emblem-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emblem-float,
+  .pulse-dot,
+  .flow {
+    animation: none;
+  }
+}
+
 /* Prose rendered from lesson markdown */
 .prose-k p {
   margin: 0.6rem 0;

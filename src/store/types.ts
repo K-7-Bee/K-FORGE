@@ -22,7 +22,8 @@ export type XpKind =
   | 'finalProject'
   | 'noHintBonus'
   | 'daily'
-  | 'placement';
+  | 'placement'
+  | 'aptitude';
 
 export interface XpTransaction {
   /** Unique activity key; full XP is awarded at most once per key. */
@@ -58,7 +59,7 @@ export interface LessonProgress {
   studiedAt?: string; // outline lessons: marked as studied (no XP)
 }
 
-export type TestKind = 'diagnostic' | 'placement' | 'quiz' | 'module' | 'final' | 'debugging' | 'practice' | 'practical';
+export type TestKind = 'diagnostic' | 'placement' | 'quiz' | 'module' | 'final' | 'debugging' | 'practice' | 'practical' | 'aptitude';
 
 export interface AnswerRecord {
   qid: string;
@@ -83,6 +84,8 @@ export interface TestAttempt {
   passed: boolean;
   mastery: number;
   answers: AnswerRecord[];
+  /** Rank tests: total XP when the test started — a rank needs its XP before the test that earns it. */
+  xpAtStart?: number;
 }
 
 export type Verification = 'auto' | 'compiled' | 'local-output' | 'self-assessed';
